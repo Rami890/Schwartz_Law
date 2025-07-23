@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+  <title>קבוצות רכישה ועסקאות מקרקעין בליווי המשרד - משרד עורכי דין דבורנית שוורץ</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+  
+  <!-- Professional Hebrew Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&family=Frank+Ruhl+Libre:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: 'Assistant', 'Heebo', Arial, sans-serif;
+      background: linear-gradient(135deg, #f8faf9 0%, #e8f2ee 100%);
+      min-height: 100vh;
+      color: #1a1a1a;
+    }
+    
+    .map-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.05);
+      padding: 40px;
+      position: relative;
+      border-top: 4px solid #2d6e3e;
+    }
+    
+    .map-header {
+      text-align: center;
+      margin-bottom: 35px;
+      padding-bottom: 25px;
+      border-bottom: 1px solid #e8f2ee;
+    }
+    
+    .map-title {
+      font-family: 'Assistant', Arial, sans-serif;
+      font-size: 36px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 12px;
+      text-shadow: none;
+      letter-spacing: -0.5px;
+    }
+    
+    .map-subtitle {
+      font-size: 17px;
+      color: #2d6e3e;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+    
+    #map {
+      height: 600px;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 20px 25px -5px rgba(45, 110, 62, 0.1), 0 10px 10px -5px rgba(45, 110, 62, 0.04);
+      border: 1px solid #e8f2ee;
+    }
+    
+    .popup-content {
+      direction: rtl;
+      font-family: 'Assistant', Arial, sans-serif;
+      text-align: right;
+      padding: 18px;
+      max-width: 260px;
+    }
+    
+    .popup-city {
+      font-size: 19px;
+      font-weight: 700;
+      color: #2d6e3e;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #d4b068;
+      font-family: 'Frank Ruhl Libre', serif;
+    }
+    
+    .popup-info {
+      font-size: 14px;
+      color: #4a4a4a;
+      line-height: 1.6;
+      margin-bottom: 14px;
+    }
+    
+    .popup-contact {
+      background: linear-gradient(135deg, #2d6e3e 0%, #1f4a2a 100%);
+      color: white;
+      padding: 10px 16px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      box-shadow: 0 4px 6px -1px rgba(45, 110, 62, 0.3);
+    }
+    
+    .popup-contact:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 15px -3px rgba(45, 110, 62, 0.4);
+      background: linear-gradient(135deg, #34803f 0%, #1f4a2a 100%);
+    }
+    
+    .page-logo {
+      position: absolute;
+      top: 25px;
+      left: 25px;
+      background: white;
+      padding: 12px;
+      border-radius: 12px;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      z-index: 1001;
+      border: 1px solid #f8faf9;
+    }
+    
+    .page-logo img {
+      height: 55px;
+      width: auto;
+    }
+    
+    .map-legend {
+      position: absolute;
+      top: 25px;
+      right: 25px;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      z-index: 1000;
+      font-family: 'Assistant', Arial, sans-serif;
+      direction: rtl;
+      border: 1px solid #f8faf9;
+      min-width: 160px;
+    }
+    
+    .legend-title {
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #1a1a1a;
+      font-size: 15px;
+      font-family: 'Assistant', Arial, sans-serif;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: #4a4a4a;
+      font-weight: 500;
+    }
+    
+    .legend-marker {
+      width: 14px;
+      height: 14px;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      margin-left: 12px;
+      border: 2px solid white;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .legend-marker.black {
+      background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
+    }
+    
+    .legend-marker.green {
+      background: linear-gradient(135deg, #2d6e3e 0%, #1f4a2a 100%);
+    }
+    
+    /* Custom popup styling */
+    .leaflet-popup-content-wrapper {
+      border-radius: 12px !important;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+      border: 1px solid #e8f2ee !important;
+    }
+    
+    .leaflet-popup-content {
+      margin: 0 !important;
+    }
+    
+    .leaflet-popup-tip {
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .hover-popup .leaflet-popup-content-wrapper {
+      background: white;
+      color: #333;
+      font-family: 'Assistant', Arial, sans-serif;
+      direction: rtl;
+    }
+    
+    /* Marker hover effects */
+    .custom-marker-black,
+    .custom-marker-green {
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    
+    /* Custom marker styling */
+    .custom-marker-black {
+      background: #1a1a1a !important;
+      border: 2px solid white;
+      border-radius: 50% 50% 50% 0;
+      box-shadow: 0 4px 6px -1px rgba(26, 26, 26, 0.6), 0 2px 4px -1px rgba(26, 26, 26, 0.3);
+      width: 20px;
+      height: 20px;
+      transform: rotate(-45deg);
+      position: relative;
+    }
+    
+    .custom-marker-black:after {
+      content: '';
+      width: 4px;
+      height: 4px;
+      background: white;
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(45deg);
+    }
+    
+    .custom-marker-green {
+      background: linear-gradient(135deg, #2d6e3e 0%, #1f4a2a 100%);
+      border: 2px solid white;
+      border-radius: 50% 50% 50% 0;
+      box-shadow: 0 4px 6px -1px rgba(45, 110, 62, 0.4), 0 2px 4px -1px rgba(45, 110, 62, 0.06);
+      width: 20px;
+      height: 20px;
+      transform: rotate(-45deg);
+      position: relative;
+    }
+    
+    .custom-marker-green:after {
+      content: '';
+      width: 4px;
+      height: 4px;
+      background: white;
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(45deg);
+    }
+    
+    .leaflet-tooltip {
+      background: rgba(45, 110, 62, 0.95) !important;
+      border: none !important;
+      border-radius: 8px !important;
+      color: white !important;
+      font-family: 'Assistant', Arial, sans-serif !important;
+      font-weight: 600 !important;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2) !important;
+      font-size: 13px !important;
+    }
+    
+    .leaflet-tooltip-top:before {
+      border-top-color: rgba(45, 110, 62, 0.95) !important;
+    }
+    
+    /* Professional touches with brand colors */
+    .map-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #2d6e3e 0%, #d4b068 50%, #2d6e3e 100%);
+      border-radius: 16px 16px 0 0;
+    }
+    
+    @media (max-width: 768px) {
+      body {
+        padding: 15px;
+      }
+      
+      .map-container {
+        padding: 25px 20px;
+        border-radius: 12px;
+        padding-top: 25px; /* Back to normal top padding */
+      }
+      
+      .map-header {
+        margin-bottom: 25px;
+        padding-bottom: 20px;
+      }
+      
+      #map {
+        height: 450px;
+      }
+      
+      .map-title {
+        font-size: 24px;
+        margin-bottom: 8px;
+      }
+      
+      .map-subtitle {
+        font-size: 14px;
+      }
+      
+      .map-legend {
+        top: 200px; /* Even further down to clear subtitle */
+        right: 10px;
+        padding: 12px;
+        font-size: 12px;
+        min-width: 140px;
+      }
+      
+      .legend-item {
+        margin-bottom: 6px;
+      }
+      
+      .page-logo {
+        top: 230px; /* Moved down to clear zoom controls */
+        left: 10px;
+        padding: 8px;
+      }
+      
+      .page-logo img {
+        height: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="map-container">
+    <div class="map-header">
+      <h1 class="map-title">קבוצות רכישה ועסקאות מקרקעין בליווי המשרד</h1>
+    </div>
+    
+    <div class="page-logo">
+      <img src="https://dvoranitlaw.com/wp-content/uploads/2024/12/לוגו-דבורנית-06.png" alt="דבורנית שוורץ - עורכת דין">
+    </div>
+    
+    <div id="map"></div>
+    
+    <div class="map-legend">
+      <div class="legend-title">מקרא</div>
+      <div class="legend-item">
+        <div class="legend-marker black"></div>
+        <span>קבוצת רכישה</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-marker green"></div>
+        <span>עסקאות מקרקעין</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  <script>
+    // Initialize map with bounds that include southern Lebanon for better northern city visibility
+    var map = L.map('map').fitBounds([[29.5, 34.2], [34.0, 35.8]]);
+    map.setMaxBounds([[29.5, 34.2], [34.0, 35.8]]);
+    map.setMinZoom(7);
+    
+    // Set initial zoom level for good overview
+    map.setZoom(7);
+    
+    // Custom tile layer for better professional look
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+      maxZoom: 18
+    }).addTo(map);
+    
+    // Project data from Excel file
+    const projects = [
+      // קבוצת רכישה (Red arrows)
+      { 
+        city: "קריית שמונה", 
+        lat: 33.2103, 
+        lng: 35.5661, 
+        type: "קבוצת רכישה",
+        info: "פרויקט אחד, 18 יח\"ד"
+      },
+      { 
+        city: "בית שמש", 
+        lat: 31.7497, 
+        lng: 34.9846, 
+        type: "קבוצת רכישה",
+        info: "פרויקט אחד, 50 יח\"ד"
+      },
+      { 
+        city: "מודיעין עילית", 
+        lat: 31.9302, 
+        lng: 35.0364, 
+        type: "קבוצת רכישה",
+        info: "פרויקט אחד, 150 יח\"ד"
+      },
+      { 
+        city: "ערד", 
+        lat: 31.2589, 
+        lng: 35.2123, 
+        type: "קבוצת רכישה",
+        info: "שני פרויקטים, 62 יח\"ד"
+      },
+      { 
+        city: "מצפה רמון", 
+        lat: 30.6093, 
+        lng: 34.801, 
+        type: "קבוצת רכישה",
+        info: "שני פרויקטים, 80 יח\"ד"
+      },
+      { 
+        city: "אופקים", 
+        lat: 31.3148, 
+        lng: 34.6204, 
+        type: "קבוצת רכישה",
+        info: "פרויקט אחד, 48 יח\"ד"
+      },
+      { 
+        city: "עפרים", 
+        lat: 32.0195, 
+        lng: 35.0418, 
+        type: "קבוצת רכישה",
+        info: "פרויקט אחד, 159 יח\"ד"
+      },
+      { 
+        city: "צפת", 
+        lat: 32.9667, 
+        lng: 35.495, 
+        type: "קבוצת רכישה",
+        info: "שלושה פרויקטים, 34 יח\"ד"
+      },
+      
+      // עסקאות מקרקעין (Green arrows)
+      { 
+        city: "נווה דניאל", 
+        lat: 31.6769, 
+        lng: 35.1436, 
+        type: "עסקאות מקרקעין",
+        info: "עסקאות נדל\"ן פרטיות"
+      },
+      { 
+        city: "גבעת שמואל", 
+        lat: 32.0777, 
+        lng: 34.8529, 
+        type: "עסקאות מקרקעין",
+        info: "עסקאות נדל\"ן פרטיות"
+      },
+      { 
+        city: "פרדס חנה", 
+        lat: 32.4725, 
+        lng: 34.9756, 
+        type: "עסקאות מקרקעין",
+        info: "עסקאות נדל\"ן פרטיות"
+      },
+      { 
+        city: "לשם", 
+        lat: 32.0675, 
+        lng: 35.0469, 
+        type: "עסקאות מקרקעין",
+        info: "עסקאות נדל\"ן פרטיות"
+      },
+      { 
+        city: "דולב", 
+        lat: 31.9267, 
+        lng: 35.1331, 
+        type: "עסקאות מקרקעין",
+        info: "עסקאות נדל\"ן פרטיות"
+      },
+      { 
+        city: "אפרת", 
+        lat: 31.6625, 
+        lng: 35.1558, 
+        type: "עסקאות מקרקעין",
+        info: "עסקאות נדל\"ן פרטיות"
+      },
+      { 
+        city: "תקוע", 
+        lat: 31.6522, 
+        lng: 35.2294, 
+        type: "עסקאות מקרקעין",
+        info: "עסקאות נדל\"ן פרטיות"
+      },
+      { 
+        city: "עלי", 
+        lat: 32.0728, 
+        lng: 35.2668, 
+        type: "עסקאות מקרקעין",
+        info: "עסקאות נדל\"ן פרטיות"
+      },
+      { 
+        city: "קריית גת", 
+        lat: 31.6103, 
+        lng: 34.7642, 
+        type: "עסקאות מקרקעין",
+        info: "עסקאות נדל\"ן פרטיות"
+      },
+      { 
+        city: "נתניה", 
+        lat: 32.3215, 
+        lng: 34.8532, 
+        type: "עסקאות מקרקעין",
+        info: "עסקאות נדל\"ן פרטיות"
+      },
+      { 
+        city: "בית שמש", 
+        lat: 31.7350, 
+        lng: 34.9950, 
+        type: "עסקאות מקרקעין",
+        info: "עסקאות נדל\"ן פרטיות"
+      },
+      { 
+        city: "ירושלים", 
+        lat: 31.7683, 
+        lng: 35.2137, 
+        type: "עסקאות מקרקעין",
+        info: "עסקאות נדל\"ן פרטיות"
+      },
+      { 
+        city: "מצפה רימון", 
+        lat: 30.6240, 
+        lng: 34.8110, 
+        type: "עסקאות מקרקעין",
+        info: "עסקאות נדל\"ן פרטיות"
+      },
+      { 
+        city: "צור הדסה", 
+        lat: 31.7172, 
+        lng: 35.0956, 
+        type: "עסקאות מקרקעין",
+        info: "עסקאות נדל\"ן פרטיות"
+      },
+      { 
+        city: "בנימינה", 
+        lat: 32.5214, 
+        lng: 34.9500, 
+        type: "עסקאות מקרקעין",
+        info: "עסקאות נדל\"ן פרטיות"
+      },
+      { 
+        city: "גן נר", 
+        lat: 32.5319, 
+        lng: 35.3381, 
+        type: "עסקאות מקרקעין",
+        info: "עסקאות נדל\"ן פרטיות"
+      },
+      { 
+        city: "אבני חפץ", 
+        lat: 32.2856, 
+        lng: 35.0736, 
+        type: "עסקאות מקרקעין",
+        info: "עסקאות נדל\"ן פרטיות"
+      }
+    ];
+
+    // Custom icon function
+    function createCustomIcon(type) {
+      const className = type === "קבוצת רכישה" ? "custom-marker-black" : "custom-marker-green";
+      return L.divIcon({
+        className: 'custom-div-icon',
+        html: `<div class="${className}"></div>`,
+        iconSize: [20, 20],
+        iconAnchor: [10, 19]
+      });
+    }
+    
+    // Add markers with hover effects
+    projects.forEach((p, index) => {
+      const typeIcon = p.type === "קבוצת רכישה" ? "🏘️" : "🏠";
+      const typeClass = p.type === "קבוצת רכישה" ? "black" : "green";
+      const bgColor = p.type === "קבוצת רכישה" ? "#1a1a1a" : "#2d6e3e";
+      // Set city name color to match arrow color
+      const cityNameColor = (p.type === "קבוצת רכישה") ? "#1a1a1a" : "#2d6e3e";
+      
+      const marker = L.marker([p.lat, p.lng], {
+        icon: createCustomIcon(p.type)
+      }).addTo(map);
+      
+      // Create popup content
+      const popupContent = `
+        <div style="direction: rtl; font-family: 'Assistant', Arial, sans-serif; text-align: right; padding: 12px; min-width: 220px;">
+          <div style="font-size: 17px; font-weight: 700; color: ${cityNameColor} !important; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 2px solid #d4b068; font-family: 'Assistant', Arial, sans-serif;">
+            ${p.city}
+          </div>
+          <div style="background: ${bgColor}; color: white; padding: 6px 10px; border-radius: 6px; margin-bottom: 10px; text-align: center; font-weight: 600; font-size: 12px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+            ${typeIcon} ${p.type}
+          </div>
+          <div style="font-size: 14px; color: #4a4a4a; line-height: 1.5; margin-bottom: 12px;">
+            ${p.info}
+          </div>
+          <div style="background: ${cityNameColor}; color: white; padding: 8px 14px; border-radius: 8px; text-align: center; font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3); transition: all 0.2s ease;" onclick="contactLawyer('${p.city}', '${p.type}')">
+            ✉️ שליחת מייל לפרטים נוספים
+          </div>
+        </div>
+      `;
+      
+      // Bind popup
+      marker.bindPopup(popupContent, {
+        closeButton: false,
+        autoClose: false,
+        closeOnEscapeKey: true,
+        className: 'hover-popup',
+        offset: [0, -12]
+      });
+      
+      // Show popup on hover
+      marker.on('mouseover', function(e) {
+        this.openPopup();
+      });
+      
+      // Close popup when mouse leaves the marker
+      marker.on('mouseout', function(e) {
+        setTimeout(() => {
+          if (!document.querySelector('.leaflet-popup:hover')) {
+            this.closePopup();
+          }
+        }, 200);
+      });
+      
+      // Also show on click for mobile
+      marker.on('click', function(e) {
+        e.originalEvent.stopPropagation();
+        this.openPopup();
+      });
+    });
+    
+    // Contact function
+    function contactLawyer(city, type) {
+      const subject = encodeURIComponent('שירותי דבורנית שוורץ משרד עורכי דין');
+      
+      window.location.href = `mailto:office@dvoranitlaw.com?subject=${subject}`;
+    }
+    
+    // Handle popup hover to keep it open
+    map.on('popupopen', function(e) {
+      const popup = e.popup;
+      const popupElement = popup._container;
+      
+      if (popupElement) {
+        popupElement.addEventListener('mouseenter', function() {
+          // Cancel any pending close
+        });
+        
+        popupElement.addEventListener('mouseleave', function() {
+          setTimeout(() => {
+            popup._source.closePopup();
+          }, 150);
+        });
+      }
+    });
+    
+    // Close all popups when clicking on map background
+    map.on('click', function(e) {
+      map.closePopup();
+    });
+    
+    // Add attribution
+    map.attributionControl.addAttribution('נתונים מעודכנים - משרד עורכי דין דבורנית שוורץ');
+  </script>
+</body>
+</html>
