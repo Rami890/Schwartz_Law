@@ -205,10 +205,19 @@
     }
     
     /* Marker hover effects */
+    /* Marker hover effects */
     .custom-marker-black,
     .custom-marker-green {
       transition: all 0.2s ease;
       cursor: pointer;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    .custom-div-icon {
+      background: none !important;
+      border: none !important;
+      pointer-events: auto !important;
     }
     
     /* Custom marker styling */
@@ -217,10 +226,11 @@
       border: 2px solid white;
       border-radius: 50% 50% 50% 0;
       box-shadow: 0 4px 6px -1px rgba(26, 26, 26, 0.6), 0 2px 4px -1px rgba(26, 26, 26, 0.3);
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
       transform: rotate(-45deg);
       position: relative;
+      cursor: pointer;
     }
     
     .custom-marker-black:after {
@@ -240,10 +250,11 @@
       border: 2px solid white;
       border-radius: 50% 50% 50% 0;
       box-shadow: 0 4px 6px -1px rgba(45, 110, 62, 0.4), 0 2px 4px -1px rgba(45, 110, 62, 0.06);
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
       transform: rotate(-45deg);
       position: relative;
+      cursor: pointer;
     }
     
     .custom-marker-green:after {
@@ -347,10 +358,21 @@
         text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.9);
       }
       
+      .custom-marker-black,
+      .custom-marker-green {
+        width: 26px;
+        height: 26px;
+      }
+      
       .legend-marker {
         width: 10px;
         height: 10px;
         margin-left: 6px;
+      }
+      
+      .custom-div-icon {
+        background: none !important;
+        border: none !important;
       }
       
       .legend-item {
@@ -402,11 +424,11 @@
     
     // Project data from Excel file
     const projects = [
-      // קבוצת רכישה (Red arrows)
+      // קבוצת רכישה (Black arrows)
       { 
         city: "קריית שמונה", 
-        lat: 33.2103, 
-        lng: 35.5661, 
+        lat: 33.2117, 
+        lng: 35.5733, 
         type: "קבוצת רכישה",
         info: "פרויקט אחד, 18 יח\"ד"
       },
@@ -587,9 +609,9 @@
       const className = type === "קבוצת רכישה" ? "custom-marker-black" : "custom-marker-green";
       return L.divIcon({
         className: 'custom-div-icon',
-        html: `<div class="${className}"></div>`,
-        iconSize: [20, 20],
-        iconAnchor: [10, 19]
+        html: `<div class="${className}" data-city="${type}"></div>`,
+        iconSize: [22, 22],
+        iconAnchor: [11, 21]
       });
     }
     
@@ -632,22 +654,32 @@
         offset: [0, -12]
       });
       
-      // Show popup on hover
+      // Show popup on hover (desktop only)
       marker.on('mouseover', function(e) {
+        if (!('ontouchstart' in window)) {
+          this.openPopup();
+        }
+      });
+      
+      // Close popup when mouse leaves the marker (desktop only)
+      marker.on('mouseout', function(e) {
+        if (!('ontouchstart' in window)) {
+          setTimeout(() => {
+            if (!document.querySelector('.leaflet-popup:hover')) {
+              this.closePopup();
+            }
+          }, 200);
+        }
+      });
+      
+      // Handle click/touch for all devices
+      marker.on('click', function(e) {
+        e.originalEvent.stopPropagation();
         this.openPopup();
       });
       
-      // Close popup when mouse leaves the marker
-      marker.on('mouseout', function(e) {
-        setTimeout(() => {
-          if (!document.querySelector('.leaflet-popup:hover')) {
-            this.closePopup();
-          }
-        }, 200);
-      });
-      
-      // Also show on click for mobile
-      marker.on('click', function(e) {
+      // Additional touch event for mobile
+      marker.on('touchstart', function(e) {
         e.originalEvent.stopPropagation();
         this.openPopup();
       });
@@ -681,6 +713,13 @@
     // Close all popups when clicking on map background
     map.on('click', function(e) {
       map.closePopup();
+    });
+    
+    // Additional mobile support
+    map.on('touchstart', function(e) {
+      if (e.originalEvent.target === e.originalEvent.currentTarget) {
+        map.closePopup();
+      }
     });
     
     // Add attribution
