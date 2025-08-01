@@ -66,7 +66,6 @@
       border-radius: 12px;
       box-shadow: 0 20px 25px -5px rgba(45, 110, 62, 0.1), 0 10px 10px -5px rgba(45, 110, 62, 0.04);
       border: 1px solid #e8f2ee;
-      position: relative;
     }
     
     .popup-content {
@@ -115,23 +114,6 @@
       background: linear-gradient(135deg, #34803f 0%, #1f4a2a 100%);
     }
     
-    .page-logo {
-      position: absolute;
-      top: 25px;
-      left: 25px;
-      background: white;
-      padding: 12px;
-      border-radius: 12px;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-      z-index: 1001;
-      border: 1px solid #f8faf9;
-    }
-    
-    .page-logo img {
-      height: 55px;
-      width: auto;
-    }
-    
     .map-legend {
       position: absolute;
       top: 25px;
@@ -148,17 +130,17 @@
     }
     
     .legend-title {
-      font-weight: 800;
-      margin-bottom: 8px;
+      font-weight: 700;
+      margin-bottom: 12px;
       color: #1a1a1a;
-      font-size: 16px;
+      font-size: 15px;
       font-family: 'Assistant', Arial, sans-serif;
-      text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.9);
     }
     
     .legend-item {
       display: flex;
       align-items: center;
+      margin-bottom: 10px;
       font-size: 14px;
       color: #4a4a4a;
       font-weight: 500;
@@ -169,9 +151,9 @@
       height: 14px;
       border-radius: 50% 50% 50% 0;
       transform: rotate(-45deg);
-      margin-left: 10px;
+      margin-left: 12px;
       border: 2px solid white;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
     
     .legend-marker.black {
@@ -205,19 +187,10 @@
     }
     
     /* Marker hover effects */
-    /* Marker hover effects */
     .custom-marker-black,
     .custom-marker-green {
       transition: all 0.2s ease;
       cursor: pointer;
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
-    }
-    
-    .custom-div-icon {
-      background: none !important;
-      border: none !important;
-      pointer-events: auto !important;
     }
     
     /* Custom marker styling */
@@ -226,11 +199,10 @@
       border: 2px solid white;
       border-radius: 50% 50% 50% 0;
       box-shadow: 0 4px 6px -1px rgba(26, 26, 26, 0.6), 0 2px 4px -1px rgba(26, 26, 26, 0.3);
-      width: 22px;
-      height: 22px;
+      width: 20px;
+      height: 20px;
       transform: rotate(-45deg);
       position: relative;
-      cursor: pointer;
     }
     
     .custom-marker-black:after {
@@ -250,11 +222,10 @@
       border: 2px solid white;
       border-radius: 50% 50% 50% 0;
       box-shadow: 0 4px 6px -1px rgba(45, 110, 62, 0.4), 0 2px 4px -1px rgba(45, 110, 62, 0.06);
-      width: 22px;
-      height: 22px;
+      width: 20px;
+      height: 20px;
       transform: rotate(-45deg);
       position: relative;
-      cursor: pointer;
     }
     
     .custom-marker-green:after {
@@ -304,7 +275,7 @@
       .map-container {
         padding: 25px 20px;
         border-radius: 12px;
-        padding-top: 25px;
+        padding-top: 25px; /* Back to normal top padding */
       }
       
       .map-header {
@@ -326,53 +297,11 @@
       }
       
       .map-legend {
-        bottom: 15px;
-        right: 15px;
+        top: 200px; /* Even further down to clear subtitle */
+        right: 10px;
         padding: 12px;
         font-size: 12px;
-      }
-      
-      .map-legend {
-        top: 80px;
-        right: 10px;
-        padding: 0;
-        font-size: 10px;
-        max-width: 80px;
-        border-radius: 0;
-        background: none;
-        box-shadow: none;
-        border: none;
-      }
-      
-      .legend-title {
-        margin-bottom: 4px;
-        font-size: 13px;
-        font-weight: 800;
-        text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.9);
-      }
-      
-      .legend-item {
-        margin-bottom: 3px;
-        font-size: 11px;
-        font-weight: 700;
-        text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.9);
-      }
-      
-      .custom-marker-black,
-      .custom-marker-green {
-        width: 26px;
-        height: 26px;
-      }
-      
-      .legend-marker {
-        width: 10px;
-        height: 10px;
-        margin-left: 6px;
-      }
-      
-      .custom-div-icon {
-        background: none !important;
-        border: none !important;
+        min-width: 140px;
       }
       
       .legend-item {
@@ -387,20 +316,17 @@
       <h1 class="map-title">קבוצות רכישה ועסקאות מקרקעין בליווי המשרד</h1>
     </div>
     
-    <div style="position: relative;">
-      <div id="map"></div>
-      <div class="map-legend">
-        <div class="legend-title">מקרא</div>
-        <div class="legend-items">
-          <div class="legend-item">
-            <div class="legend-marker black"></div>
-            <span>קבוצת רכישה</span>
-          </div>
-          <div class="legend-item">
-            <div class="legend-marker green"></div>
-            <span>עסקאות מקרקעין</span>
-          </div>
-        </div>
+    <div id="map"></div>
+    
+    <div class="map-legend">
+      <div class="legend-title">מקרא</div>
+      <div class="legend-item">
+        <div class="legend-marker black"></div>
+        <span>קבוצת רכישה</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-marker green"></div>
+        <span>עסקאות מקרקעין</span>
       </div>
     </div>
   </div>
@@ -424,11 +350,11 @@
     
     // Project data from Excel file
     const projects = [
-      // קבוצת רכישה (Black arrows)
+      // קבוצת רכישה (Red arrows)
       { 
         city: "קריית שמונה", 
-        lat: 33.2117, 
-        lng: 35.5733, 
+        lat: 33.2103, 
+        lng: 35.5661, 
         type: "קבוצת רכישה",
         info: "פרויקט אחד, 18 יח\"ד"
       },
@@ -609,9 +535,9 @@
       const className = type === "קבוצת רכישה" ? "custom-marker-black" : "custom-marker-green";
       return L.divIcon({
         className: 'custom-div-icon',
-        html: `<div class="${className}" data-city="${type}"></div>`,
-        iconSize: [22, 22],
-        iconAnchor: [11, 21]
+        html: `<div class="${className}"></div>`,
+        iconSize: [20, 20],
+        iconAnchor: [10, 19]
       });
     }
     
@@ -639,7 +565,7 @@
           <div style="font-size: 14px; color: #4a4a4a; line-height: 1.5; margin-bottom: 12px;">
             ${p.info}
           </div>
-          <div style="background: ${cityNameColor}; color: white; padding: 8px 14px; border-radius: 8px; text-align: center; font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3); transition: all 0.2s ease;" onclick="contactLawyer()">
+          <div style="background: ${cityNameColor}; color: white; padding: 8px 14px; border-radius: 8px; text-align: center; font-size: 12px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3); transition: all 0.2s ease;" onclick="contactLawyer('${p.city}', '${p.type}')">
             ✉️ שליחת מייל לפרטים נוספים
           </div>
         </div>
@@ -654,32 +580,22 @@
         offset: [0, -12]
       });
       
-      // Show popup on hover (desktop only)
+      // Show popup on hover
       marker.on('mouseover', function(e) {
-        if (!('ontouchstart' in window)) {
-          this.openPopup();
-        }
-      });
-      
-      // Close popup when mouse leaves the marker (desktop only)
-      marker.on('mouseout', function(e) {
-        if (!('ontouchstart' in window)) {
-          setTimeout(() => {
-            if (!document.querySelector('.leaflet-popup:hover')) {
-              this.closePopup();
-            }
-          }, 200);
-        }
-      });
-      
-      // Handle click/touch for all devices
-      marker.on('click', function(e) {
-        e.originalEvent.stopPropagation();
         this.openPopup();
       });
       
-      // Additional touch event for mobile
-      marker.on('touchstart', function(e) {
+      // Close popup when mouse leaves the marker
+      marker.on('mouseout', function(e) {
+        setTimeout(() => {
+          if (!document.querySelector('.leaflet-popup:hover')) {
+            this.closePopup();
+          }
+        }, 200);
+      });
+      
+      // Also show on click for mobile
+      marker.on('click', function(e) {
         e.originalEvent.stopPropagation();
         this.openPopup();
       });
@@ -713,13 +629,6 @@
     // Close all popups when clicking on map background
     map.on('click', function(e) {
       map.closePopup();
-    });
-    
-    // Additional mobile support
-    map.on('touchstart', function(e) {
-      if (e.originalEvent.target === e.originalEvent.currentTarget) {
-        map.closePopup();
-      }
     });
     
     // Add attribution
